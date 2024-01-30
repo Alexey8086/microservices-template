@@ -1,0 +1,41 @@
+{
+  "name": "moleculer-template-service",
+  "version": "1.0.0",
+  "description": "My Moleculer-based microservices project",
+  "scripts": {
+    "dev": "moleculer-runner --repl --hot services/**/*.service.js",
+    "start": "moleculer-runner",
+    "dc:up": "docker-compose up --build -d",
+    "dc:logs": "docker-compose logs -f",
+    "dc:down": "docker-compose down"
+  },
+  "keywords": [
+    "microservices",
+    "moleculer"
+  ],
+  "author": "",
+  "devDependencies": {
+    "moleculer-repl": "^0.7.3"
+  },
+  "dependencies": {
+    "@moleculer/channels": "^0.1.8",
+    "@moleculer/lab": "^0.6.4",
+    "amqplib": "^0.10.3",
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.4.1",
+    "ioredis": "^5.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "moleculer": "^0.14.26",
+    "moleculer-db": "^0.8.20",
+    "moleculer-db-adapter-mongo": "^0.4.15",
+    "moleculer-db-adapter-sequelize": "^0.2.16",
+    "moleculer-elasticsearch": "^1.1.8",
+    "moleculer-web": "^0.10.4",
+    "pg": "^8.11.3",
+    "pino": "^8.17.2",
+    "redlock": "^4.2.0"
+  },
+  "engines": {
+    "node": ">= 16.x.x"
+  }
+}

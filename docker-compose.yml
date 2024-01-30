@@ -1,0 +1,119 @@
+version: '2.1'
+
+services:
+
+  api:
+    build:
+      context: .
+    container_name: api
+    image: template
+    env_file: .env
+    environment:
+      SERVICES: api
+      PORT: ${PORT_API_SERVICE}
+    depends_on:
+      - postgres
+      - rabbitmq
+      - redis
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.api-gw.rule=PathPrefix(`/`)"
+      - "traefik.http.services.api-gw.loadbalancer.server.port=8000"
+    networks:
+      - internet
+      - appnet
+    restart: unless-stopped
+
+  auth:
+    build:
+      context: .
+    container_name: auth
+    image: template
+    env_file: .env
+    environment:
+      SERVICES: auth
+    depends_on:
+      - postgres
+      - rabbitmq
+      - redis
+    networks:
+      - appnet
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: postgres
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - pg_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DATABASE}
+    command: postgres -c listen_addresses='*'
+    ports:
+      - "${POSTGRES_PORT1}:${POSTGRES_PORT2}"
+    networks:
+      - appnet
+    restart: unless-stopped
+
+  rabbitmq:
+    container_name: rabbitmq
+    hostname: rabbitmq-server
+    image: 'rabbitmq:3'
+    environment:
+      - RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbit log_levels [{connection,error},{default,error}] disk_free_limit 2147483648
+    ports:
+      - "${PORT1_RABBIT}:${PORT2_RABBIT}"
+      - "${PORT3_RABBIT}:${PORT4_RABBIT}"
+    volumes:
+      - ./rabbitmq:/var/lib/rabbitmq
+    networks:
+      - appnet
+    restart: unless-stopped
+
+  redis:
+    container_name: redis
+    hostname: redis-server
+    image: redis:latest
+    ports:
+      - "${PORT1_REDIS}:${PORT2_REDIS}"
+    volumes:
+      - /path/to/local/dаta:/root/redis
+      - /path/to/local/redis.conf:/usr/local/etc/redis/redis.conf
+    networks:
+      - appnet
+    environment:
+    #   - REDIS_PASSWORD=12345
+      - REDIS_PORT="${PORT1_REDIS}"
+    #   - REDIS_DATABASES=16
+    restart: unless-stopped
+
+  traefik:
+    container_name: traefik
+    image: traefik:v2.4
+    command:
+      - "--api.insecure=true" # Don't do that in production!
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+    ports:
+      - "${PORT_API_SERVICE}:${PORT2_TRAEFIK}"
+      - "${PORT3_TRAEFIK}:${PORT4_TRAEFIK}"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - internet
+      - appnet
+    restart: unless-stopped
+
+networks:
+  internet:
+    name: internet
+    driver: bridge
+  appnet:
+    name: appnet
+    driver: bridge
+
+volumes:
+  pg_data:
+  prom_data:
