@@ -12,8 +12,8 @@ module.exports = {
 	logger: true,
 	logLevel: "debug",
 
-	// transporter: null,clear
-	transporter: process.env.TRANSPORTER || 'amqp://rabbitmq-server:5672',
+	transporter: null,
+	// transporter: process.env.TRANSPORTER || 'amqp://rabbitmq-server:5672',
 
 	// transporter: {
 	//     type: "AMQP",
@@ -29,7 +29,8 @@ module.exports = {
 	//     }
 	// },
 
-	cacher: process.env.CACHER || "redis://redis-server:6379",
+	cacher: 'redis',
+	// cacher: process.env.CACHER || "redis://redis-server:6379",
 
 
 	metrics: {

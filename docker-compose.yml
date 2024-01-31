@@ -20,7 +20,7 @@ services:
       - "traefik.http.routers.api-gw.rule=PathPrefix(`/`)"
       - "traefik.http.services.api-gw.loadbalancer.server.port=8000"
     networks:
-      - internet
+      # - internet
       - appnet
     restart: unless-stopped
 
@@ -37,6 +37,22 @@ services:
       - rabbitmq
       - redis
     networks:
+      - appnet
+    restart: unless-stopped
+
+  lab:
+    build:
+      context: .
+      dockerfile: Dockerfile.lab
+    container_name: lab
+    environment:
+      SERVICES: lab
+      PORT: 3210
+    depends_on:
+      - api
+      - auth
+    networks:
+      - internet
       - appnet
     restart: unless-stopped
 
@@ -106,6 +122,103 @@ services:
       - appnet
     restart: unless-stopped
 
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus:/etc/prometheus/
+    container_name: prometheus
+    hostname: prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+    ports:
+      - 9090:9090
+    restart: unless-stopped
+    environment:
+      TZ: "Europe/Moscow"
+    networks:
+      - appnet
+      - default
+
+  node-exporter:
+    image: prom/node-exporter
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    container_name: exporter
+    hostname: exporter
+    command:
+      - --path.procfs=/host/proc
+      - --path.sysfs=/host/sys
+      - --collector.filesystem.ignored-mount-points
+      - ^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns|rootfs/var/lib/docker/aufs)($$|/)
+    ports:
+      - 9100:9100
+    restart: unless-stopped
+    environment:
+      TZ: "Europe/Moscow"
+    networks:
+      - appnet
+      - default
+
+  grafana:
+    image: grafana/grafana
+    user: root
+    depends_on:
+      - prometheus
+    ports:
+      - 3000:3000
+    volumes:
+      - ./grafana:/var/lib/grafana
+      - ./grafana/provisioning/:/etc/grafana/provisioning/
+    container_name: grafana
+    hostname: grafana
+    restart: unless-stopped
+    environment:
+      TZ: "Europe/Moscow"
+    networks:
+      - default
+
+  alertmanager-bot:
+    command:
+      - --alertmanager.url=http://alertmanager:9093
+      - --log.level=info
+      - --store=bolt
+      - --bolt.path=/data/bot.db
+      - --telegram.admin=5007982044
+      - --telegram.token=6370871989:AAGEs1xJ0bXShobr4ZrAk_1f_HuwYlK8GeI
+    image: metalmatze/alertmanager-bot:0.4.3
+    user: root
+    ports:
+      - 8085:8085
+    container_name: alertmanager-bot
+    hostname: alertmanager-bot
+    environment:
+      TZ: "Europe/Moscow"
+    restart: unless-stopped
+    volumes:
+      - ./data:/data
+    networks:
+      - default
+
+  alertmanager:
+    image: prom/alertmanager:v0.21.0
+    user: root
+    ports:
+      - 127.0.0.1:9093:9093
+    volumes:
+      - ./alertmanager/:/etc/alertmanager/
+    container_name: alertmanager
+    hostname: alertmanager
+    environment:
+      TZ: "Europe/Moscow"
+    restart: unless-stopped
+    command:
+      - '--config.file=/etc/alertmanager/config.yml'
+      - '--storage.path=/etc/alertmanager/data'
+    networks:
+      - default
+
 networks:
   internet:
     name: internet
@@ -113,6 +226,11 @@ networks:
   appnet:
     name: appnet
     driver: bridge
+  default:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.28.0.0/16
 
 volumes:
   pg_data:

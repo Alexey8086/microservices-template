@@ -1,0 +1,16 @@
+scrape_configs:
+  - job_name: node
+    scrape_interval: 5s
+    static_configs:
+    - targets: ['node-exporter:9100']
+
+# для работы с alert manager
+rule_files:
+  - 'alert.rules'
+
+alerting:
+  alertmanagers:
+  - scheme: http
+    static_configs:
+    - targets:
+      - "alertmanager:9093"

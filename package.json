@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "description": "My Moleculer-based microservices project",
   "scripts": {
+    "lab": "moleculer-runner services services/lab.service.js",
     "dev": "moleculer-runner --repl --hot services/**/*.service.js",
-    "start": "moleculer-runner",
+    "start": "moleculer-runner services services/api.service.js services/auth.service.js",
     "dc:up": "docker-compose up --build -d",
     "dc:logs": "docker-compose logs -f",
     "dc:down": "docker-compose down"
