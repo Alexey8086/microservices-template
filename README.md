@@ -19,10 +19,12 @@
 -    postgres
 -    prometheus
 -    grafana
--    jaeger
 -    rabbitMQ
 -    redis
 -    traefik
+-    alertmanager
+-    jaeger
+-    elasticsearch
 
 # docker-compose команды
 docker-compose up -d
@@ -33,6 +35,11 @@ docker-compose down --volumes --remove-orphans
 docker-compose logs --tail=0
 docker-compose logs --tail=0 | docker-compose logs --no-log-prefix -f
 docker-compose logs api
+
+    удаляет все контейнеры
+docker rm $(docker ps -aq)
+    удаляет все образы
+docker rmi $(docker images -q)
 
 docker-compose up --build --force-recreate --volumes
 

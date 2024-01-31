@@ -3,12 +3,12 @@
   "version": "1.0.0",
   "description": "My Moleculer-based microservices project",
   "scripts": {
-    "lab": "moleculer-runner services services/lab.service.js",
-    "dev": "moleculer-runner --repl --hot services/**/*.service.js",
-    "start": "moleculer-runner services services/api.service.js services/auth.service.js",
+    "lab": "moleculer-runner services/tools/lab.service.js",
+    "start": "moleculer-runner --config moleculer.prod.config.js services !services/tools/**/*.service.js",
+    "dev": "moleculer-runner --repl --hot --config moleculer.dev.config.js services services/tools/lab.service.js",
     "dc:up": "docker-compose up --build -d",
     "dc:logs": "docker-compose logs -f",
-    "dc:down": "docker-compose down"
+    "dc:down": "docker-compose down -v"
   },
   "keywords": [
     "microservices",
@@ -25,6 +25,7 @@
     "bcryptjs": "^2.4.3",
     "dotenv": "^16.4.1",
     "ioredis": "^5.0.0",
+    "jaeger-client": "^3.19.0",
     "jsonwebtoken": "^9.0.2",
     "moleculer": "^0.14.26",
     "moleculer-db": "^0.8.20",

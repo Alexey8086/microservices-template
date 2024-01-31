@@ -4,7 +4,7 @@ const Laboratory = require("@moleculer/lab");
 module.exports = {
     mixins: [Laboratory.AgentService],
     settings: {
-        token: "moleculer-lab-token",
+        token: "secure-token-for-connect-to-moleculer-lab-AArt30921Xp-koiB1ei7",
         apiKey: "B63468Xp-sMB2a9"
     }
 };

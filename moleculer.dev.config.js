@@ -1,25 +1,18 @@
 "use strict";
-const os = require("os");
-
-const dotenv = require("dotenv");
-dotenv.config();
 
 module.exports = {
-    nodeID: (process.env.NODEID ? process.env.NODEID + "-" : "") + os.hostname().toLowerCase(),
+    nodeID: 'Unique',
     namespace: "",
     metadata: {},
 
     logger: true,
     logLevel: "debug",
-
-    transporter: 'http://172.19.0.1:5672',
-
-    cacher: "http://172.19.0.1:6379",
-
+    transporter: null,
+    cacher: "MemoryLRU",
 
 
     metrics: {
-        enabled: true,
+        enabled: false,
         reporter: {
             type: "Prometheus",
             options: {
