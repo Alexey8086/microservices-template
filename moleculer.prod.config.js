@@ -14,20 +14,6 @@ module.exports = {
 
     transporter: process.env.TRANSPORTER || 'amqp://rabbitmq-server:5672',
 
-    // transporter: {
-    //     type: "AMQP",
-    //     options: {
-    //         url: "amqp://rmuser:rmpassword@rabbitmq-server:5672",
-    //         eventTimeToLive: 5000,
-    //         prefetch: 1,
-    //         socketOptions: {
-    //             servername: process.env.RABBIT_SERVER_NAME || 'rabbitmq'
-    //         },
-    //         // If true, queues will be autodeleted once service is stopped, i.e., queue listener is removed
-    //         autoDeleteQueues: true
-    //     }
-    // },
-
     cacher: process.env.CACHER || "redis://redis-server:6379",
 
     metrics: {

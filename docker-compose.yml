@@ -5,8 +5,8 @@ services:
   api:
     build:
       context: .
+      dockerfile: Dockerfile.api
     container_name: api
-    image: template
     env_file: .env
     environment:
       SERVICES: api
@@ -23,15 +23,14 @@ services:
       - "traefik.http.routers.api-gw.rule=PathPrefix(`/`)"
       - "traefik.http.services.api-gw.loadbalancer.server.port=8000"
     networks:
-      # - internet
       - appnet
     restart: unless-stopped
 
   auth:
     build:
       context: .
+      dockerfile: Dockerfile.api
     container_name: auth
-    image: template
     env_file: .env
     environment:
       SERVICES: auth
@@ -43,25 +42,6 @@ services:
       - jaeger-query
       - jaeger-agent
     networks:
-      - appnet
-    restart: unless-stopped
-
-  lab:
-    build:
-      context: .
-      dockerfile: Dockerfile.lab
-    container_name: lab
-    environment:
-      SERVICES: lab
-      PORT: 3210
-    depends_on:
-      - api
-      - auth
-      - jaeger-collector
-      - jaeger-query
-      - jaeger-agent
-    networks:
-      - internet
       - appnet
     restart: unless-stopped
 
@@ -171,16 +151,15 @@ services:
       - default
 
   grafana:
-    image: grafana/grafana
-    user: root
+    image: grafana/grafana-enterprise
+    container_name: grafana
+    user: '0'
     depends_on:
       - prometheus
     ports:
       - 3000:3000
     volumes:
-      - ./grafana:/var/lib/grafana
-      - ./grafana/provisioning/:/etc/grafana/provisioning/
-    container_name: grafana
+      - grafana-storage:/var/lib/grafana
     hostname: grafana
     restart: unless-stopped
     environment:
@@ -322,3 +301,4 @@ volumes:
   prom_data:
   esdata:
     driver: local
+  grafana-storage: {}

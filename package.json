@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "description": "My Moleculer-based microservices project",
   "scripts": {
-    "lab": "moleculer-runner services/tools/lab.service.js",
-    "start": "moleculer-runner --config moleculer.prod.config.js services !services/tools/**/*.service.js",
-    "dev": "moleculer-runner --repl --hot --config moleculer.dev.config.js services services/tools/lab.service.js",
+    "start:api": "moleculer-runner --config moleculer.prod.config.js services/api.service.js",
+    "start:auth": "moleculer-runner --config moleculer.prod.config.js services/auth.service.js",
+    "dev": "moleculer-runner --repl --hot --config moleculer.dev.config.js services",
     "dc:up": "docker-compose up --build -d",
     "dc:logs": "docker-compose logs -f",
     "dc:down": "docker-compose down -v"
@@ -20,7 +20,6 @@
   },
   "dependencies": {
     "@moleculer/channels": "^0.1.8",
-    "@moleculer/lab": "^0.6.4",
     "amqplib": "^0.10.3",
     "bcryptjs": "^2.4.3",
     "dotenv": "^16.4.1",
