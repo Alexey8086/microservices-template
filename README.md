@@ -1,6 +1,3 @@
-# moleculer-template
-
-
 ## Зависимости, которые храняться в node_moules
 -    "@moleculer/channels": "^0.1.8",
 -    "@moleculer/lab": "^0.6.4",
@@ -14,44 +11,13 @@
 -    "redlock": "^4.2.0"
 -    "amqplib": "^0.10.3",
 
-## "Зависимости" приложения, запускаются в docker
-## контейнере (одно приложение - один контейнер)
--    postgres
+## Контейнеры (одно приложение - один контейнер)
+-    postgres (есть скрипт для инициализации БД, чтобы у нас была не пустая бд, а с данными и связями и таблицами)
 -    prometheus
--    grafana
+-    grafana (показываем графики с разный статистикой, к примеру, по использованию серверных ресурсов нашими конейнерами)
 -    rabbitMQ
 -    redis
 -    traefik
--    alertmanager
+-    alertmanager (отправляем уведомления в telegram бота, к примеру есть сервак упал)
 -    jaeger
 -    elasticsearch
-
-# docker-compose команды
-docker-compose up -d
-docker-compose up --build -d
-docker-compose down -v
-docker-compose down --volumes --remove-orphans
-
-docker-compose logs --tail=0
-docker-compose logs --tail=0 | docker-compose logs --no-log-prefix -f
-docker-compose logs api
-
-    удаляет все контейнеры
-docker rm $(docker ps -aq)
-    удаляет все образы
-docker rmi $(docker images -q)
-
-docker-compose up --build --force-recreate --volumes
-
-You should not be using "localhost" to connect to the db, use the container name as the host/server. In this case, postgres_db
-
-Чтобы подключиться к postgres из вне
-DATABASE_URL = 'postgresql://devuser:devuser@localhost:5432/auth_service_database?schema=public'
-
-# Linux cmds
-sudo lsof -i :6379
-sudo service redis-server stop
-
-# https://www.reddit.com/r/docker/comments/n4w3w7/error_connect_econnrefused_1270015432/
-
-When running locally, your exposing pg to local port 5432 when running in the container, your app has access to a different set of ip and dns registrations. It's not running in 'localhost' anymore but a virtual subnet. Docker has it's own dns resolution and maps the container names to their respective container (much like setting up a hosts alias).
